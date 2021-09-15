@@ -1,0 +1,5 @@
+[
+  [ "water.png", "desert.png", "grass.png", "forest.png", "mountain.png", "swamp.png" ],
+  [ "desert_road_*" ],
+  [ "grass_road_*" ]
+]

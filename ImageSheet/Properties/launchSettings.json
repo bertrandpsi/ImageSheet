@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageSheet": {
+      "commandName": "Project",
+      "commandLineArgs": "examples"
+    }
+  }
+}

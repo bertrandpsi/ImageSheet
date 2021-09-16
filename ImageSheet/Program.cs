@@ -21,18 +21,31 @@ namespace ImageSheet
 
         static void Main(string[] args)
         {
-            var workingDirectory = Environment.CurrentDirectory;
+            var configFile = Path.Combine(Environment.CurrentDirectory,"sheet.json");
             if (args.Length > 0)
-                workingDirectory = Path.Combine(workingDirectory, args[0]);
-            Console.WriteLine("Running on " + workingDirectory);
+            {
+                if (File.Exists(Path.Combine(Environment.CurrentDirectory, args[0])))
+                    configFile = Path.Combine(Environment.CurrentDirectory, args[0]);
+                else if (File.Exists(Path.Combine(Environment.CurrentDirectory, args[0], "sheet.json")))
+                    configFile = Path.Combine(Environment.CurrentDirectory, args[0], "sheet.json");
+                else if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, args[0])))
+                    Directory.SetCurrentDirectory(Path.Combine(Environment.CurrentDirectory, args[0]));
+                else
+                {
+                    Console.WriteLine("Path provided by argument either do not point to a sheet.json file or is not a directory");
+                    return;
+                }
+            }
+            Console.WriteLine("Image Sheet 0.2");
+            Console.WriteLine("Running on " + configFile);
 
             JsonConfig config;
-            if (File.Exists(Path.Combine(workingDirectory, "sheet.json")))
-                config = JsonSerializer.Deserialize<JsonConfig>(File.ReadAllText(Path.Combine(workingDirectory, "sheet.json")));
+            if (File.Exists(configFile))
+                config = JsonSerializer.Deserialize<JsonConfig>(File.ReadAllText(configFile));
             else
                 config = new JsonConfig { filesRow = new List<List<string>> { supportedFormats.Select(row => "*" + row).ToList() } };
 
-            var files = Directory.GetFiles(workingDirectory)
+            var files = Directory.GetFiles(Path.GetDirectoryName(configFile))
                 .Where(row => supportedFormats.Any(r2 => row.ToLower().EndsWith(r2)) && Path.GetFileName(row).ToLower() != config.outputFile.ToLower())
                 .OrderBy(row => row)
                 .ToList();
@@ -89,11 +102,11 @@ namespace ImageSheet
                         {
                             using(var g=Graphics.FromImage(resized))
                                 g.DrawImage(destBitmap, 0, 0, w, h);
-                            resized.Save(Path.Combine(workingDirectory, config.outputFile));
+                            resized.Save(Path.Combine(Path.GetDirectoryName(configFile), config.outputFile));
                         }
                     }
                     else
-                        destBitmap.Save(Path.Combine(workingDirectory, config.outputFile));
+                        destBitmap.Save(Path.Combine(Path.GetDirectoryName(configFile), config.outputFile));
                 }
             }
             finally

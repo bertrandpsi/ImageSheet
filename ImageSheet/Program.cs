@@ -70,7 +70,7 @@ namespace ImageSheet
                     images.Add(row, Bitmap.FromFile(row));
                 });
                 height += rowFiles.Max(row => images[row].Height);
-                width = Math.Max(width, rowFiles.Sum(row => images[row].Height));
+                width = Math.Max(width, rowFiles.Sum(row => images[row].Width));
                 row++;
             }
 
